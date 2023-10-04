@@ -3,9 +3,9 @@ import cv2
 import numpy as np
 
 # Define the factors for color grading
-brightness_factor = 1 # Adjust as needed
-contrast_factor = 2    # Adjust as needed
-saturation_factor = 1  # Adjust as needed
+brightness_factor = 1.5  # Adjust as needed
+contrast_factor = 1.5    # Adjust as needed
+saturation_factor = 1.5  # Adjust as needed
 
 # Load the input video
 input_video = mp.VideoFileClip('videoplayback.mp4')
@@ -15,12 +15,20 @@ audio = input_video.audio
 
 # Define a function to adjust brightness, contrast, and saturation
 def adjust_color(frame):
-    frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)  # Convert to BGR format
+    # Convert the frame to BGR format (OpenCV format)
+    frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+
+    # Adjust brightness using cv2.convertScaleAbs
     frame = cv2.convertScaleAbs(frame, alpha=brightness_factor, beta=0)
+
+    # Adjust contrast using cv2.addWeighted
     frame = cv2.addWeighted(frame, contrast_factor, frame, 0, 0)
+
+    # Adjust saturation in the HSV color space
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     hsv[:, :, 1] = np.clip(hsv[:, :, 1] * saturation_factor, 0, 255)
     frame = cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB)  # Convert back to RGB format
+
     return frame
 
 # Apply color grading effects to each frame
